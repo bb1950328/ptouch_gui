@@ -8,14 +8,14 @@ import designs
 
 
 class Device(object):
-    def __init__(self, executable_location: pathlib.Path):
-        self.executable_location = executable_location
+    def __init__(self, executable: str):
+        self.executable = executable
         self.info: data.DeviceInfo | None = None
 
     def _run_command(self, command: list[str] | str) -> tuple[str, str]:
         if isinstance(command, str):
             command = [command]
-        executable = ["sudo", str(self.executable_location.absolute())]  # todo remove sudo
+        executable = ["sudo", self.executable] # todo remove sudo
         full_command = executable + command
         print("DEBUG:", full_command)
         proc = subprocess.run(full_command, capture_output=True)

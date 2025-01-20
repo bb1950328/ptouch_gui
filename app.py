@@ -13,7 +13,7 @@ class App(tk.Tk):
         tk.Tk.__init__(self)
         self.title("PTouch GUI")
 
-        self.device = device.Device(pathlib.Path("/home/bb/dev/ptouch-print/cmake-build-debug/ptouch-print"))  # todo
+        self.device = device.Device("ptouch-print")
 
         self.printer_info = ui_printer_info.PrinterInfo(self)
         self.printer_info.pack(side=tk.TOP, fill=tk.X)
