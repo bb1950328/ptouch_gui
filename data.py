@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import enum
 
 
 @dataclasses.dataclass
@@ -18,27 +19,3 @@ class DeviceInfo(object):
 class DeviceError(object):
     description: str
 
-
-class Design(abc.ABC):
-    @abc.abstractmethod
-    def get_command(self) -> "DesignCommand":
-        pass
-
-
-class DesignCommand(abc.ABC):
-    def initialize(self, device_info: DeviceInfo) -> None:
-        pass
-    @abc.abstractmethod
-    def get_command(self) -> list[str]:
-        pass
-
-    def cleanup(self) -> None:
-        pass
-
-
-class SimpleDesignCommand(DesignCommand):
-    def __init__(self, command: list[str]):
-        self.command = command
-
-    def get_command(self) -> list[str]:
-        return self.command

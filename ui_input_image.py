@@ -1,68 +1,17 @@
-import enum
-import os
 import pathlib
-import random
-import tempfile
+import tkinter as tk
 from tkinter import filedialog
 
 import PIL.Image
 
 import data
+import designs
 import ui_input
-import tkinter as tk
-
-from data import DeviceInfo
-
-
-class ResizeMode(enum.Enum):
-    ORIGINAL = 0
-    AUTOMATIC = 1
-    FIXED = 2
-
-class ImageDesignCommand(data.DesignCommand):
-    def __init__(self, original_file: pathlib.Path, resize_mode: ResizeMode, fixed_width: int|None=None):
-        self.original_file = original_file
-        self.resize_mode = resize_mode
-        self.fixed_width = fixed_width
-        self.file: pathlib.Path | None = None
-        self.should_cleanup_file = False
-
-    def initialize(self, device_info: DeviceInfo) -> None:
-        if self.resize_mode == ResizeMode.ORIGINAL:
-            self.file = self.original_file
-        else:
-            self.file = pathlib.Path(tempfile.gettempdir()) / f"resized_{os.urandom(16).hex()}.png"
-            self.should_cleanup_file = True
-            im = PIL.Image.open(self.original_file)
-            factor: float
-            if self.resize_mode == ResizeMode.AUTOMATIC:
-                factor = device_info.max_printing_width / im.size[1]
-            else:
-                factor = self.fixed_width / im.size[0]
-            im_resized = im.resize((int(im.size[0]*factor), int(im.size[1]*factor)), resample=PIL.Image.Resampling.NEAREST)
-            im_resized.save(self.file)
-
-    def get_command(self) -> list[str]:
-        return ["--image", str(self.file)]
-
-    def cleanup(self) -> None:
-        if self.file is not None and self.should_cleanup_file:
-            self.file.unlink()
-
-
-class ImageDesign(data.Design):
-    def __init__(self, image: pathlib.Path, resize_mode: ResizeMode, fixed_width: int|None=None):
-        self.image = image
-        self.resize_mode = resize_mode
-        self.fixed_width = fixed_width
-
-    def get_command(self) -> ImageDesignCommand:
-        return ImageDesignCommand(self.image, self.resize_mode, self.fixed_width)
 
 
 class InputDetailImage(ui_input.InputDetail):
     def __init__(self, master: tk.Widget):
-        ui_input.InputDetail.__init__(self, master, ui_input.InputType.IMAGE)
+        ui_input.InputDetail.__init__(self, master, designs.DesignType.IMAGE)
 
         tk.Label(self, text="Image file").grid(row=0, column=0, sticky=tk.W)
 
@@ -97,7 +46,7 @@ class InputDetailImage(ui_input.InputDetail):
         return self._fire_design_changed()
 
     def _resize_type_changed(self):
-        self.fixed_size_spinbox.configure(state= tk.NORMAL if self.resize_type_var.get() == 2 else tk.DISABLED)
+        self.fixed_size_spinbox.configure(state=tk.NORMAL if self.resize_type_var.get() == 2 else tk.DISABLED)
         self._fire_design_changed()
 
     def _open_filechooser(self):
@@ -105,16 +54,16 @@ class InputDetailImage(ui_input.InputDetail):
         if chosen_path:
             self.path_var.set(chosen_path)
 
-    def get_settings(self) -> str:
-        return self.path_var.get()
+    def set_design(self, design: designs.ImageDesign) -> None:
+        self.path_var.set(str(design.image))
+        self.resize_type_var.set(design.resize_mode.value)
+        if design.fixed_width:
+            self.fixed_size_var.set(str(design.fixed_width))
 
-    def set_settings(self, settings: str) -> None:
-        self.path_var.set(settings)
-
-    def get_design(self) -> data.Design|None:
+    def get_design(self) -> designs.ImageDesign | None:
         path = pathlib.Path(self.path_var.get())
         if path.is_file():
-            resize_mode = ResizeMode(self.resize_type_var.get())
-            fixed_width = int(self.fixed_size_var.get()) if resize_mode == ResizeMode.FIXED else None
-            return ImageDesign(path, resize_mode, fixed_width)
+            resize_mode = designs.ImageResizeMode(self.resize_type_var.get())
+            fixed_width = int(self.fixed_size_var.get()) if resize_mode == designs.ImageResizeMode.FIXED else None
+            return designs.ImageDesign(path, resize_mode, fixed_width)
         return None

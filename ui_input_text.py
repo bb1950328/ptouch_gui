@@ -1,27 +1,14 @@
 import tkinter as tk
 
 import data
+import designs
 import ui_input
 import tkfontchooser
 
 
-class TextDesign(data.Design):
-    def __init__(self, text: str, font: str, fontsize: int | None) -> None:
-        self.text = text
-        self.font = font
-        self.fontsize = fontsize
-
-    def get_command(self) -> data.DesignCommand:
-        command = ["--font", self.font]
-        if self.fontsize is not None:
-            command += ["--fontsize", str(self.fontsize)]
-        command += ["--text", self.text]
-        return data.SimpleDesignCommand(command)
-
-
 class InputDetailText(ui_input.InputDetail):
     def __init__(self, master: tk.Widget):
-        ui_input.InputDetail.__init__(self, master, ui_input.InputType.TEXT)
+        ui_input.InputDetail.__init__(self, master, designs.DesignType.TEXT)
         self.font = tk.font.nametofont("TkDefaultFont").actual()
         self.default_font_size = self.font["size"]
 
@@ -73,17 +60,22 @@ class InputDetailText(ui_input.InputDetail):
         self.font["size"] = int(self.font_size_var.get())
         self._fire_design_changed()
 
-    def get_settings(self) -> str:
-        return self.text.get("1.0", tk.END)
-
-    def set_settings(self, settings: str) -> None:
+    def set_design(self, design: designs.TextDesign) -> None:
         self.text.delete("1.0", tk.END)
-        self.text.insert("1.0", settings)
+        self.text.insert("1.0", design.text)
 
-    def get_design(self) -> data.Design|None:
+        self.font = {"family": design.font, "weight": tk.font.NORMAL, "slant": tk.font.ROMAN, "underline": 0, "overstrike": 0}
+        if design.fontsize is None:
+            self.auto_font_size_var.set(True)
+        else:
+            self.auto_font_size_var.set(False)
+            self.font_size_var.set(str(design.fontsize))
+
+
+    def get_design(self) -> designs.TextDesign | None:
         text = self.text.get("1.0", tk.END).strip()
         if text:
             font = self.font["family"]
             fontsize = None if self.auto_font_size_var.get() else int(self.font_size_var.get())
-            return TextDesign(text, font, fontsize)
+            return designs.TextDesign(text, font, fontsize)
         return None
