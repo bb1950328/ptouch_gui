@@ -4,6 +4,7 @@ from tkinter import filedialog
 from tkinter import ttk
 
 import PIL.Image
+import tkinterdnd2
 
 import data
 import designs
@@ -13,6 +14,9 @@ import ui_input
 class InputDetailImage(ui_input.InputDetail):
     def __init__(self, master: tk.Widget):
         super().__init__(master, designs.DesignType.IMAGE)
+
+        self.drop_target_register(tkinterdnd2.DND_FILES)
+        self.dnd_bind("<<Drop>>", lambda e: self.path_var.set(e.data))
 
         ttk.Label(self, text="Image file").grid(row=0, column=0, sticky=tk.W)
 

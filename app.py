@@ -1,19 +1,17 @@
-import pathlib
 import tkinter as tk
 
-import ttkthemes
+import tkinterdnd2
 
 import data
 import device
-import ui_printer_info
 import ui_input
 import ui_preview
-from tkinter import ttk
+import ui_printer_info
 
 
-class App(ttkthemes.ThemedTk):
+class App(tkinterdnd2.Tk):
     def __init__(self):
-        super().__init__(theme="adapta")
+        super().__init__()
 
         # style = ttk.Style(self)
         # style.theme_use('alt')

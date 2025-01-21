@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+
+import tkinterdnd2
+
 import designs
 import ui_input
 import tkfontchooser
@@ -7,9 +10,17 @@ import tkfontchooser
 
 class InputDetailText(ui_input.InputDetail):
     def __init__(self, master: tk.Widget):
-        super().__init__( master, designs.DesignType.TEXT)
+        super().__init__(master, designs.DesignType.TEXT)
         self.font = tk.font.nametofont("TkDefaultFont").actual()
         self.default_font_size = self.font["size"]
+
+        self.drop_target_register(tkinterdnd2.DND_TEXT)
+
+        def accept_drop(d: str):
+            self._set_text(d)
+            self._fire_design_changed()
+
+        self.dnd_bind("<<Drop>>", lambda e: accept_drop(e.data))
 
         param_frame = ttk.Frame(self)
         param_frame.pack(side=tk.TOP, fill=tk.X)
@@ -60,8 +71,7 @@ class InputDetailText(ui_input.InputDetail):
         self._fire_design_changed()
 
     def set_design(self, design: designs.TextDesign) -> None:
-        self.text.delete("1.0", tk.END)
-        self.text.insert("1.0", design.text)
+        self._set_text(design.text)
 
         self.font = {"family": design.font, "weight": tk.font.NORMAL, "slant": tk.font.ROMAN, "underline": 0, "overstrike": 0}
         if design.fontsize is None:
@@ -70,6 +80,9 @@ class InputDetailText(ui_input.InputDetail):
             self.auto_font_size_var.set(False)
             self.font_size_var.set(str(design.fontsize))
 
+    def _set_text(self, text):
+        self.text.delete("1.0", tk.END)
+        self.text.insert("1.0", text)
 
     def get_design(self) -> designs.TextDesign | None:
         text = self.text.get("1.0", tk.END).strip()
