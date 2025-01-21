@@ -1,18 +1,21 @@
 import json
 
-import data
 import designs
 import ui_input
 import tkinter as tk
+from tkinter import ttk
 
 
 class InputDetailChain(ui_input.InputDetail):
     def __init__(self, master: tk.Widget):
-        ui_input.InputDetail.__init__(self, master, designs.DesignType.CHAIN)
+        super().__init__(master, designs.DesignType.CHAIN)
 
         self.child_designs: list[designs.Design] = []
         self.child_types: list[designs.DesignType] = []
-        list_frame = tk.Frame(self)
+        self.current_detail: ui_input.InputDetail | None = None
+        self.current_detail_index: int = 0
+
+        list_frame = ttk.Frame(self)
         list_frame.pack(side=tk.LEFT, fill=tk.Y)
 
         self.listbox = tk.Listbox(list_frame, selectmode=tk.SINGLE)
@@ -27,17 +30,15 @@ class InputDetailChain(ui_input.InputDetail):
             value_inside.set("Add...")
             self._add_child(ty)
 
-        value_inside.trace("w", add_click)
-
-        self.add_button = tk.OptionMenu(list_frame, value_inside, *designs.DESIGN_TYPE_DESCRIPTIONS.values())
+        self.add_button = ttk.OptionMenu(list_frame, value_inside, *designs.DESIGN_TYPE_DESCRIPTIONS.values())
         self.add_button.pack(side=tk.LEFT)
-        delete_button = tk.Button(list_frame, text="Delete", command=lambda: self._delete_selected())
+        delete_button = ttk.Button(list_frame, text="Delete", command=lambda: self._delete_selected())
         delete_button.pack(side=tk.LEFT)
 
-        self.detail_frame = tk.Frame(self)
+        self.detail_frame = ttk.Frame(self)
         self.detail_frame.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.current_detail: ui_input.InputDetail | None = None
-        self.current_detail_index: int = 0
+
+        value_inside.trace("w", add_click)
 
     def _leave_detail(self):
         if self.current_detail is not None:

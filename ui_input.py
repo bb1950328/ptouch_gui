@@ -1,23 +1,24 @@
 import abc
 import tkinter as tk
+from tkinter import ttk
 from typing import Callable
 
 import designs
 
 
-class Input(tk.LabelFrame):
+class Input(ttk.LabelFrame):
 
     def __init__(self, root: tk.Tk):
-        tk.LabelFrame.__init__(self, root, text="Input")
+        super().__init__(root, text="Input")
 
         self.type_var = tk.IntVar()
         self.type_var.set(designs.DesignType.TEXT.value)
 
-        self.type_frame = tk.Frame(self)
+        self.type_frame = ttk.Frame(self)
         self.type_frame.pack(side=tk.TOP)
 
         for it in designs.DesignType:
-            rb = tk.Radiobutton(self.type_frame, variable=self.type_var, value=it.value, text=designs.DESIGN_TYPE_DESCRIPTIONS[it], command=self._change_type)
+            rb = ttk.Radiobutton(self.type_frame, variable=self.type_var, value=it.value, text=designs.DESIGN_TYPE_DESCRIPTIONS[it], command=self._change_type)
             rb.pack(side=tk.LEFT)
 
         self.inactive_settings: dict[designs.DesignType, str] = {}
@@ -51,9 +52,9 @@ class Input(tk.LabelFrame):
             self.current_detail.add_design_change_listener(listener)
 
 
-class InputDetail(tk.Frame, abc.ABC):
+class InputDetail(ttk.Frame, abc.ABC):
     def __init__(self, master: tk.Widget, input_type: designs.DesignType):
-        tk.Frame.__init__(self, master)
+        super().__init__(master)
         self._input_type = input_type
         self.design_change_listeners: list[Callable] = []
 

@@ -1,6 +1,7 @@
 import pathlib
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
 
 import PIL.Image
 
@@ -11,32 +12,32 @@ import ui_input
 
 class InputDetailImage(ui_input.InputDetail):
     def __init__(self, master: tk.Widget):
-        ui_input.InputDetail.__init__(self, master, designs.DesignType.IMAGE)
+        super().__init__(master, designs.DesignType.IMAGE)
 
-        tk.Label(self, text="Image file").grid(row=0, column=0, sticky=tk.W)
+        ttk.Label(self, text="Image file").grid(row=0, column=0, sticky=tk.W)
 
         self.path_var = tk.StringVar()
         self.path_var.trace("w", lambda *args: self._path_changed())
-        self.path_entry = tk.Entry(self, textvariable=self.path_var)
+        self.path_entry = ttk.Entry(self, textvariable=self.path_var)
         self.path_entry.grid(row=0, column=1)
 
-        self.chooser_button = tk.Button(self, text="...", command=self._open_filechooser)
+        self.chooser_button = ttk.Button(self, text="...", command=self._open_filechooser)
         self.chooser_button.grid(row=0, column=2)
 
-        tk.Label(self, text="Original Size:").grid(row=1, column=0, sticky=tk.W)
+        ttk.Label(self, text="Original Size:").grid(row=1, column=0, sticky=tk.W)
         self.original_size_var = tk.StringVar()
-        tk.Label(self, textvariable=self.original_size_var).grid(row=1, column=1, sticky=tk.W)
+        ttk.Label(self, textvariable=self.original_size_var).grid(row=1, column=1, sticky=tk.W)
 
-        tk.Label(self, text="Set Height:").grid(row=2, column=0, sticky=tk.W)
+        ttk.Label(self, text="Set Height:").grid(row=2, column=0, sticky=tk.W)
         self.resize_type_var = tk.IntVar()
         self.resize_type_var.trace("w", lambda *args: self._resize_type_changed())
-        tk.Radiobutton(self, text="Original", value=0, variable=self.resize_type_var).grid(row=2, column=1, sticky=tk.W)
-        tk.Radiobutton(self, text="Automatic", value=1, variable=self.resize_type_var).grid(row=3, column=1, sticky=tk.W)
-        fixed_frame = tk.Frame(self)
+        ttk.Radiobutton(self, text="Original", value=0, variable=self.resize_type_var).grid(row=2, column=1, sticky=tk.W)
+        ttk.Radiobutton(self, text="Automatic", value=1, variable=self.resize_type_var).grid(row=3, column=1, sticky=tk.W)
+        fixed_frame = ttk.Frame(self)
         fixed_frame.grid(row=4, column=1, sticky=tk.W)
-        tk.Radiobutton(fixed_frame, text="Fixed: ", value=2, variable=self.resize_type_var).pack(side=tk.LEFT)
+        ttk.Radiobutton(fixed_frame, text="Fixed: ", value=2, variable=self.resize_type_var).pack(side=tk.LEFT)
         self.fixed_size_var = tk.StringVar()
-        self.fixed_size_spinbox = tk.Spinbox(fixed_frame, textvariable=self.fixed_size_var, from_=1, to=1024, width=4)
+        self.fixed_size_spinbox = ttk.Spinbox(fixed_frame, textvariable=self.fixed_size_var, from_=1, to=1024, width=4)
         self.fixed_size_spinbox.pack(side=tk.LEFT)
 
     def _path_changed(self):

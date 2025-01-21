@@ -1,5 +1,6 @@
 import pathlib
 import tkinter as tk
+from tkinter import ttk
 
 import PIL.Image
 import PIL.ImageTk
@@ -7,9 +8,9 @@ import PIL.ImageTk
 import data
 
 
-class Preview(tk.LabelFrame):
+class Preview(ttk.LabelFrame):
     def __init__(self, root: tk.Tk):
-        tk.LabelFrame.__init__(self, root, text="Preview")
+        super().__init__(root, text="Preview")
 
         self.canvas = tk.Canvas(self)
         self.canvas.pack(side=tk.TOP, fill=tk.X)

@@ -1,16 +1,23 @@
 import pathlib
 import tkinter as tk
 
+import ttkthemes
+
 import data
 import device
 import ui_printer_info
 import ui_input
 import ui_preview
+from tkinter import ttk
 
 
-class App(tk.Tk):
+class App(ttkthemes.ThemedTk):
     def __init__(self):
-        tk.Tk.__init__(self)
+        super().__init__(theme="adapta")
+
+        # style = ttk.Style(self)
+        # style.theme_use('alt')
+
         self.title("PTouch GUI")
 
         self.device = device.Device("ptouch-print")

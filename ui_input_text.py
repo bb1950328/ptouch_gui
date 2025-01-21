@@ -1,6 +1,5 @@
 import tkinter as tk
-
-import data
+from tkinter import ttk
 import designs
 import ui_input
 import tkfontchooser
@@ -8,26 +7,26 @@ import tkfontchooser
 
 class InputDetailText(ui_input.InputDetail):
     def __init__(self, master: tk.Widget):
-        ui_input.InputDetail.__init__(self, master, designs.DesignType.TEXT)
+        super().__init__( master, designs.DesignType.TEXT)
         self.font = tk.font.nametofont("TkDefaultFont").actual()
         self.default_font_size = self.font["size"]
 
-        param_frame = tk.Frame(self)
+        param_frame = ttk.Frame(self)
         param_frame.pack(side=tk.TOP, fill=tk.X)
-        self.font_label = tk.Label(param_frame)
+        self.font_label = ttk.Label(param_frame)
         self.font_label.pack(side=tk.LEFT)
 
         self.font_size_var = tk.StringVar()
         self.font_size_var.set(str(self.font["size"]))
-        self.font_size_entry = tk.Spinbox(param_frame, from_=1, to=200, increment=1, width=3, textvariable=self.font_size_var)
+        self.font_size_entry = ttk.Spinbox(param_frame, from_=1, to=200, increment=1, width=3, textvariable=self.font_size_var)
         self.font_size_var.trace("w", lambda *args: self._font_size_changed())
         self.font_size_entry.pack(side=tk.LEFT, padx=5)
 
-        self.font_btn = tk.Button(param_frame, text="...", command=self._open_font_chooser)
+        self.font_btn = ttk.Button(param_frame, text="...", command=self._open_font_chooser)
         self.font_btn.pack(side=tk.LEFT)
 
         self.auto_font_size_var = tk.BooleanVar()
-        self.auto_font_size = tk.Checkbutton(param_frame, text="Auto Font Size", variable=self.auto_font_size_var, command=lambda: self._auto_font_size_changed())
+        self.auto_font_size = ttk.Checkbutton(param_frame, text="Auto Font Size", variable=self.auto_font_size_var, command=lambda: self._auto_font_size_changed())
         self.auto_font_size.pack(side=tk.LEFT)
 
         self._update_font_label()
