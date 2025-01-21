@@ -16,7 +16,16 @@ class InputDetailImage(ui_input.InputDetail):
         super().__init__(master, designs.DesignType.IMAGE)
 
         self.drop_target_register(tkinterdnd2.DND_FILES)
-        self.dnd_bind("<<Drop>>", lambda e: self.path_var.set(e.data))
+
+        def accept_drop(e: tkinterdnd2.TkinterDnD.DnDEvent):
+            d: str = e.data
+            if d.startswith("{"):
+                d = d[1:]
+            if d.endswith("}"):
+                d = d[:-1]
+            self.path_var.set(d)
+
+        self.dnd_bind("<<Drop>>", lambda e: accept_drop(e))
 
         ttk.Label(self, text="Image file").grid(row=0, column=0, sticky=tk.W)
 
