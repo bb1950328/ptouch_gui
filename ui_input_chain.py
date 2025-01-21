@@ -13,7 +13,7 @@ class InputDetailChain(ui_input.InputDetail):
         self.child_designs: list[designs.Design] = []
         self.child_types: list[designs.DesignType] = []
         self.current_detail: ui_input.InputDetail | None = None
-        self.current_detail_index: int = 0
+        self.current_detail_index: int = -1
 
         list_frame = ttk.Frame(self)
         list_frame.pack(side=tk.LEFT, fill=tk.Y)
@@ -30,7 +30,7 @@ class InputDetailChain(ui_input.InputDetail):
             value_inside.set("Add...")
             self._add_child(ty)
 
-        self.add_button = ttk.OptionMenu(list_frame, value_inside, *designs.DESIGN_TYPE_DESCRIPTIONS.values())
+        self.add_button = ttk.OptionMenu(list_frame, value_inside, "Add...", *designs.DESIGN_TYPE_DESCRIPTIONS.values())
         self.add_button.pack(side=tk.LEFT)
         delete_button = ttk.Button(list_frame, text="Delete", command=lambda: self._delete_selected())
         delete_button.pack(side=tk.LEFT)
@@ -67,6 +67,9 @@ class InputDetailChain(ui_input.InputDetail):
         self._fire_design_changed()
 
     def _listbox_selection_changed(self):
+        if len(self.listbox.curselection()) > 0 and self.listbox.curselection()[0] == self.current_detail_index:
+            return
+
         self._leave_detail()
 
         if len(self.listbox.curselection()) > 0:
@@ -82,6 +85,8 @@ class InputDetailChain(ui_input.InputDetail):
 
     def _delete_selected(self):
         idx_to_delete = self.current_detail_index
+        if idx_to_delete < 0:
+            return
 
         self._leave_detail()
 
@@ -91,7 +96,8 @@ class InputDetailChain(ui_input.InputDetail):
 
         self._fire_design_changed()
 
-        self.listbox.selection_set(min(idx_to_delete, len(self.child_designs) - 1))
+        if len(self.child_designs) > 0:
+            self.listbox.selection_set(min(idx_to_delete, len(self.child_designs) - 1))
 
     def set_design(self, design: designs.ChainDesign) -> None:
         self.child_designs: list[designs.Design] = design.children
